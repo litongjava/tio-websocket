@@ -24,6 +24,8 @@ import com.litongjava.tio.http.common.HttpResponse;
 import com.litongjava.tio.http.common.HttpResponseEncoder;
 import com.litongjava.tio.http.common.HttpResponseStatus;
 import com.litongjava.tio.server.intf.ServerAioHandler;
+import com.litongjava.tio.utils.encoder.Base64Utils;
+import com.litongjava.tio.utils.encoder.Sha1Utils;
 import com.litongjava.tio.utils.hutool.StrUtil;
 import com.litongjava.tio.websocket.common.Opcode;
 import com.litongjava.tio.websocket.common.WsRequest;
@@ -31,8 +33,6 @@ import com.litongjava.tio.websocket.common.WsResponse;
 import com.litongjava.tio.websocket.common.WsServerDecoder;
 import com.litongjava.tio.websocket.common.WsServerEncoder;
 import com.litongjava.tio.websocket.common.WsSessionContext;
-import com.litongjava.tio.websocket.common.util.BASE64Util;
-import com.litongjava.tio.websocket.common.util.SHA1Util;
 import com.litongjava.tio.websocket.server.handler.IWsMsgHandler;
 
 /** @author tanyaowu */
@@ -152,12 +152,7 @@ public class WsServerAioHandler implements ServerAioHandler {
     if (wsResponse.isHandShake()) {
       WsSessionContext imSessionContext = (WsSessionContext) channelContext.get();
       HttpResponse handshakeResponse = imSessionContext.getHandshakeResponse();
-      try {
-        return HttpResponseEncoder.encode(handshakeResponse, tioConfig, channelContext);
-      } catch (UnsupportedEncodingException e) {
-        log.error(e.toString(), e);
-        return null;
-      }
+      return HttpResponseEncoder.encode(handshakeResponse, tioConfig, channelContext);
     }
 
     ByteBuffer byteBuffer = WsServerEncoder.encode(wsResponse, tioConfig, channelContext);
@@ -302,8 +297,8 @@ public class WsServerAioHandler implements ServerAioHandler {
           SEC_WEBSOCKET_KEY_SUFFIX_BYTES.length);
 
 //			String Sec_WebSocket_Key_Magic = Sec_WebSocket_Key + SEC_WEBSOCKET_KEY_SUFFIX_BYTES;
-      byte[] key_array = SHA1Util.SHA1(allBs);
-      String acceptKey = BASE64Util.byteArrayToBase64(key_array);
+      byte[] key_array = Sha1Utils.SHA1(allBs);
+      String acceptKey = Base64Utils.encodeToString(key_array);
       HttpResponse httpResponse = new HttpResponse(request);
 
       httpResponse.setStatus(HttpResponseStatus.C101);
