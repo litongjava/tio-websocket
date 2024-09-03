@@ -7,22 +7,16 @@ import com.litongjava.tio.websocket.common.WsSessionContext;
 
 /**
  *
- * @author tanyaowu
- * 2017年7月30日 上午9:16:02
+ * @author tanyaowu 2017年7月30日 上午9:16:02
  */
-public class WsServerAioListener implements ServerAioListener {
+public class WebSocketServerAioListener implements ServerAioListener {
 
-  public WsServerAioListener() {
+  public WebSocketServerAioListener() {
   }
-
-  // @Override
-  // public void onAfterClose(ChannelContext channelContext, Throwable throwable, String remark, boolean isRemove) {
-  // }
 
   @SuppressWarnings("deprecation")
   @Override
-  public void onAfterConnected(ChannelContext channelContext, boolean isConnected, boolean isReconnect)
-      throws Exception {
+  public void onAfterConnected(ChannelContext channelContext, boolean isConnected, boolean isReconnect) throws Exception {
     WsSessionContext wsSessionContext = new WsSessionContext();
     channelContext.set(wsSessionContext);
     return;
@@ -38,8 +32,7 @@ public class WsServerAioListener implements ServerAioListener {
   }
 
   @Override
-  public void onBeforeClose(ChannelContext channelContext, Throwable throwable, String remark, boolean isRemove)
-      throws Exception {
+  public void onBeforeClose(ChannelContext channelContext, Throwable throwable, String remark, boolean isRemove) throws Exception {
   }
 
   @Override

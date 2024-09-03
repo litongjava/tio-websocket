@@ -29,14 +29,18 @@ public class WsSessionContext {
 
   private String token = null;
 
+  /**
+   * other data
+   */
+  private Object data = null;
+
   // websocket 协议用到的，有时候数据包是分几个到的，注意那个fin字段，本im暂时不支持
   private List<byte[]> lastParts = null;
 
   /**
    *
    *
-   * @author tanyaowu
-   * 2017年2月21日 上午10:27:54
+   * @author tanyaowu 2017年2月21日 上午10:27:54
    *
    */
   public WsSessionContext() {
@@ -113,4 +117,11 @@ public class WsSessionContext {
     this.token = token;
   }
 
+  public Object getData() {
+    return data;
+  }
+
+  public void setData(Object data) {
+    this.data = data;
+  }
 }

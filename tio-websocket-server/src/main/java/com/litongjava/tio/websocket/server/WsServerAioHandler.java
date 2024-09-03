@@ -17,12 +17,12 @@ import com.litongjava.tio.core.exception.TioDecodeException;
 import com.litongjava.tio.core.intf.Packet;
 import com.litongjava.tio.http.common.HeaderName;
 import com.litongjava.tio.http.common.HeaderValue;
-import com.litongjava.tio.http.common.HttpConst;
 import com.litongjava.tio.http.common.HttpRequest;
 import com.litongjava.tio.http.common.HttpRequestDecoder;
 import com.litongjava.tio.http.common.HttpResponse;
 import com.litongjava.tio.http.common.HttpResponseEncoder;
 import com.litongjava.tio.http.common.HttpResponseStatus;
+import com.litongjava.tio.http.common.RequestHeaderKey;
 import com.litongjava.tio.server.intf.ServerAioHandler;
 import com.litongjava.tio.utils.encoder.Base64Utils;
 import com.litongjava.tio.utils.encoder.Sha1Utils;
@@ -33,7 +33,7 @@ import com.litongjava.tio.websocket.common.WsResponse;
 import com.litongjava.tio.websocket.common.WsServerDecoder;
 import com.litongjava.tio.websocket.common.WsServerEncoder;
 import com.litongjava.tio.websocket.common.WsSessionContext;
-import com.litongjava.tio.websocket.server.handler.IWsMsgHandler;
+import com.litongjava.tio.websocket.server.handler.IWebSocketHandler;
 
 /** @author tanyaowu */
 public class WsServerAioHandler implements ServerAioHandler {
@@ -52,13 +52,13 @@ public class WsServerAioHandler implements ServerAioHandler {
 
   private WsServerConfig wsServerConfig;
 
-  private IWsMsgHandler wsMsgHandler;
+  private IWebSocketHandler wsMsgHandler;
 
   /**
    * @param wsServerConfig
    * @param wsMsgHandler
    */
-  public WsServerAioHandler(WsServerConfig wsServerConfig, IWsMsgHandler wsMsgHandler) {
+  public WsServerAioHandler(WsServerConfig wsServerConfig, IWebSocketHandler wsMsgHandler) {
     this.wsServerConfig = wsServerConfig;
     this.wsMsgHandler = wsMsgHandler;
   }
@@ -281,7 +281,7 @@ public class WsServerAioHandler implements ServerAioHandler {
   public static HttpResponse updateWebSocketProtocol(HttpRequest request, ChannelContext channelContext) {
     Map<String, String> headers = request.getHeaders();
 
-    String Sec_WebSocket_Key = headers.get(HttpConst.RequestHeaderKey.Sec_WebSocket_Key);
+    String Sec_WebSocket_Key = headers.get(RequestHeaderKey.Sec_WebSocket_Key);
 
     if (StrUtil.isNotBlank(Sec_WebSocket_Key)) {
       byte[] Sec_WebSocket_Key_Bytes = null;

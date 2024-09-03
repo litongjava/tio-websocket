@@ -10,7 +10,7 @@ import com.litongjava.tio.websocket.common.WsRequest;
  * @author tanyaowu
  * 2017年7月30日 上午9:34:59
  */
-public interface IWsMsgHandler {
+public interface IWebSocketHandler {
   /**
    * <li>对httpResponse参数进行补充并返回，如果返回null表示不想和对方建立连接，框架会断开连接，如果返回非null，框架会把这个对象发送给对方</li>
    * <li>注：请不要在这个方法中向对方发送任何消息，因为这个时候握手还没完成，发消息会导致协议交互失败。</li>
