@@ -6,18 +6,15 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.litongjava.tio.core.intf.TioUuid;
 import com.litongjava.tio.server.ServerTioConfig;
 import com.litongjava.tio.server.TioServer;
-import com.litongjava.tio.utils.Threads;
 import com.litongjava.tio.utils.thread.pool.SynThreadPoolExecutor;
 import com.litongjava.tio.websocket.common.WsTioUuid;
 import com.litongjava.tio.websocket.server.handler.IWebSocketHandler;
 
 /**
  *
- * @author tanyaowu
- * 2017年7月30日 上午9:45:54
+ * @author tanyaowu 2017年7月30日 上午9:45:54
  */
 public class WsServerStarter {
   @SuppressWarnings("unused")
@@ -72,8 +69,7 @@ public class WsServerStarter {
     this(port, wsMsgHandler, null, null);
   }
 
-  public WsServerStarter(int port, IWebSocketHandler wsMsgHandler, SynThreadPoolExecutor tioExecutor,
-      ThreadPoolExecutor groupExecutor) throws IOException {
+  public WsServerStarter(int port, IWebSocketHandler wsMsgHandler, SynThreadPoolExecutor tioExecutor, ThreadPoolExecutor groupExecutor) throws IOException {
     this(new WsServerConfig(port), wsMsgHandler, tioExecutor, groupExecutor);
   }
 
@@ -81,31 +77,20 @@ public class WsServerStarter {
     this(wsServerConfig, wsMsgHandler, null, null);
   }
 
-  public WsServerStarter(WsServerConfig wsServerConfig, IWebSocketHandler wsMsgHandler, SynThreadPoolExecutor tioExecutor,
-      ThreadPoolExecutor groupExecutor) throws IOException {
-    this(wsServerConfig, wsMsgHandler, new WsTioUuid(), tioExecutor, groupExecutor);
-  }
-
-  public WsServerStarter(WsServerConfig wsServerConfig, IWebSocketHandler wsMsgHandler, TioUuid tioUuid,
-      SynThreadPoolExecutor tioExecutor, ThreadPoolExecutor groupExecutor) throws IOException {
-    if (tioExecutor == null) {
-      tioExecutor = Threads.getTioExecutor();
-    }
-
-    if (groupExecutor == null) {
-      groupExecutor = Threads.getGroupExecutor();
-    }
-
+  public WsServerStarter(WsServerConfig wsServerConfig, IWebSocketHandler wsMsgHandler, SynThreadPoolExecutor tioExecutor, ThreadPoolExecutor groupExecutor) throws IOException {
+    WsTioUuid wsTioUuid = new WsTioUuid();
     this.wsServerConfig = wsServerConfig;
     this.wsMsgHandler = wsMsgHandler;
     wsServerAioHandler = new WsServerAioHandler(wsServerConfig, wsMsgHandler);
     wsServerAioListener = new WebSocketServerAioListener();
-    serverTioConfig = new ServerTioConfig("Tio Websocket Server", wsServerAioHandler, wsServerAioListener, tioExecutor,
-        groupExecutor);
+    serverTioConfig = new ServerTioConfig("Tio Websocket Server");
+    serverTioConfig.setServerAioHandler(wsServerAioHandler);
+    serverTioConfig.setServerAioListener(wsServerAioListener);
     serverTioConfig.setHeartbeatTimeout(0);
-    serverTioConfig.setTioUuid(tioUuid);
+    serverTioConfig.setTioUuid(wsTioUuid);
     serverTioConfig.setReadBufferSize(1024 * 30);
     tioServer = new TioServer(serverTioConfig);
+
   }
 
   public void start() throws IOException {
