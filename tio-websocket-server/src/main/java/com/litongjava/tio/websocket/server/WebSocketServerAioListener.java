@@ -1,9 +1,9 @@
 package com.litongjava.tio.websocket.server;
 
+import com.litongjava.aio.Packet;
 import com.litongjava.tio.core.ChannelContext;
-import com.litongjava.tio.core.intf.Packet;
 import com.litongjava.tio.server.intf.ServerAioListener;
-import com.litongjava.tio.websocket.common.WsSessionContext;
+import com.litongjava.tio.websocket.common.WebsocketSessionContext;
 
 /**
  *
@@ -17,7 +17,7 @@ public class WebSocketServerAioListener implements ServerAioListener {
   @SuppressWarnings("deprecation")
   @Override
   public void onAfterConnected(ChannelContext channelContext, boolean isConnected, boolean isReconnect) throws Exception {
-    WsSessionContext wsSessionContext = new WsSessionContext();
+    WebsocketSessionContext wsSessionContext = new WebsocketSessionContext();
     channelContext.set(wsSessionContext);
     return;
   }

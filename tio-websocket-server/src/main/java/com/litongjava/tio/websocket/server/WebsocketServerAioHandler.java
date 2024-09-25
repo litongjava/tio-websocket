@@ -10,11 +10,11 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.litongjava.aio.Packet;
 import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.core.Tio;
 import com.litongjava.tio.core.TioConfig;
 import com.litongjava.tio.core.exception.TioDecodeException;
-import com.litongjava.tio.core.intf.Packet;
 import com.litongjava.tio.http.common.HeaderName;
 import com.litongjava.tio.http.common.HeaderValue;
 import com.litongjava.tio.http.common.HttpRequest;
@@ -28,16 +28,15 @@ import com.litongjava.tio.utils.encoder.Base64Utils;
 import com.litongjava.tio.utils.encoder.Sha1Utils;
 import com.litongjava.tio.utils.hutool.StrUtil;
 import com.litongjava.tio.websocket.common.Opcode;
-import com.litongjava.tio.websocket.common.WsRequest;
-import com.litongjava.tio.websocket.common.WsResponse;
+import com.litongjava.tio.websocket.common.WebsocketRequest;
+import com.litongjava.tio.websocket.common.WebscoketResponse;
 import com.litongjava.tio.websocket.common.WsServerDecoder;
 import com.litongjava.tio.websocket.common.WsServerEncoder;
-import com.litongjava.tio.websocket.common.WsSessionContext;
+import com.litongjava.tio.websocket.common.WebsocketSessionContext;
 import com.litongjava.tio.websocket.server.handler.IWebSocketHandler;
 
-/** @author tanyaowu */
-public class WsServerAioHandler implements ServerAioHandler {
-  private static Logger log = LoggerFactory.getLogger(WsServerAioHandler.class);
+public class WebsocketServerAioHandler implements ServerAioHandler {
+  private static Logger log = LoggerFactory.getLogger(WebsocketServerAioHandler.class);
   /**
    * value: List<WsRequest>
    */
@@ -50,7 +49,7 @@ public class WsServerAioHandler implements ServerAioHandler {
 
   private static final byte[] SEC_WEBSOCKET_KEY_SUFFIX_BYTES = SEC_WEBSOCKET_KEY_SUFFIX.getBytes();
 
-  private WsServerConfig wsServerConfig;
+  private WebsocketServerConfig wsServerConfig;
 
   private IWebSocketHandler wsMsgHandler;
 
@@ -58,16 +57,16 @@ public class WsServerAioHandler implements ServerAioHandler {
    * @param wsServerConfig
    * @param wsMsgHandler
    */
-  public WsServerAioHandler(WsServerConfig wsServerConfig, IWebSocketHandler wsMsgHandler) {
+  public WebsocketServerAioHandler(WebsocketServerConfig wsServerConfig, IWebSocketHandler wsMsgHandler) {
     this.wsServerConfig = wsServerConfig;
     this.wsMsgHandler = wsMsgHandler;
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public WsRequest decode(ByteBuffer buffer, int limit, int position, int readableLength, ChannelContext channelContext)
+  public WebsocketRequest decode(ByteBuffer buffer, int limit, int position, int readableLength, ChannelContext channelContext)
       throws TioDecodeException {
-    WsSessionContext wsSessionContext = (WsSessionContext) channelContext.get();
+    WebsocketSessionContext wsSessionContext = (WebsocketSessionContext) channelContext.get();
     // int initPosition = buffer.position();
 
     if (!wsSessionContext.isHandshaked()) {// 尚未握手
@@ -85,7 +84,7 @@ public class WsServerAioHandler implements ServerAioHandler {
       wsSessionContext.setHandshakeRequest(request);
       wsSessionContext.setHandshakeResponse(httpResponse);
 
-      WsRequest wsRequestPacket = new WsRequest();
+      WebsocketRequest wsRequestPacket = new WebsocketRequest();
       // wsRequestPacket.setHeaders(httpResponse.getHeaders());
       // wsRequestPacket.setBody(httpResponse.getBody());
       wsRequestPacket.setHandShake(true);
@@ -93,33 +92,33 @@ public class WsServerAioHandler implements ServerAioHandler {
       return wsRequestPacket;
     }
 
-    WsRequest websocketPacket = WsServerDecoder.decode(buffer, channelContext);
+    WebsocketRequest websocketPacket = WsServerDecoder.decode(buffer, channelContext);
 
     if (websocketPacket != null) {
       if (!websocketPacket.isWsEof()) { // 数据包尚未完成
-        List<WsRequest> parts = (List<WsRequest>) channelContext.getAttribute(NOT_FINAL_WEBSOCKET_PACKET_PARTS);
+        List<WebsocketRequest> parts = (List<WebsocketRequest>) channelContext.getAttribute(NOT_FINAL_WEBSOCKET_PACKET_PARTS);
         if (parts == null) {
           parts = new ArrayList<>();
           channelContext.setAttribute(NOT_FINAL_WEBSOCKET_PACKET_PARTS, parts);
         }
         parts.add(websocketPacket);
       } else {
-        List<WsRequest> parts = (List<WsRequest>) channelContext.getAttribute(NOT_FINAL_WEBSOCKET_PACKET_PARTS);
+        List<WebsocketRequest> parts = (List<WebsocketRequest>) channelContext.getAttribute(NOT_FINAL_WEBSOCKET_PACKET_PARTS);
         if (parts != null) {
           channelContext.setAttribute(NOT_FINAL_WEBSOCKET_PACKET_PARTS, null);
 
           parts.add(websocketPacket);
-          WsRequest first = parts.get(0);
+          WebsocketRequest first = parts.get(0);
           websocketPacket.setWsOpcode(first.getWsOpcode());
 
           int allBodyLength = 0;
-          for (WsRequest wsRequest : parts) {
+          for (WebsocketRequest wsRequest : parts) {
             allBodyLength += wsRequest.getBody().length;
           }
 
           byte[] allBody = new byte[allBodyLength];
           Integer index = 0;
-          for (WsRequest wsRequest : parts) {
+          for (WebsocketRequest wsRequest : parts) {
             System.arraycopy(wsRequest.getBody(), 0, allBody, index, wsRequest.getBody().length);
             index += wsRequest.getBody().length;
           }
@@ -146,11 +145,11 @@ public class WsServerAioHandler implements ServerAioHandler {
 
   @Override
   public ByteBuffer encode(Packet packet, TioConfig tioConfig, ChannelContext channelContext) {
-    WsResponse wsResponse = (WsResponse) packet;
+    WebscoketResponse wsResponse = (WebscoketResponse) packet;
 
     // 握手包
     if (wsResponse.isHandShake()) {
-      WsSessionContext imSessionContext = (WsSessionContext) channelContext.get();
+      WebsocketSessionContext imSessionContext = (WebsocketSessionContext) channelContext.get();
       HttpResponse handshakeResponse = imSessionContext.getHandshakeResponse();
       return HttpResponseEncoder.encode(handshakeResponse, tioConfig, channelContext);
     }
@@ -160,13 +159,13 @@ public class WsServerAioHandler implements ServerAioHandler {
   }
 
   /** @return the httpConfig */
-  public WsServerConfig getHttpConfig() {
+  public WebsocketServerConfig getHttpConfig() {
     return wsServerConfig;
   }
 
-  private WsResponse h(WsRequest websocketPacket, byte[] bytes, Opcode opcode, ChannelContext channelContext)
+  private WebscoketResponse h(WebsocketRequest websocketPacket, byte[] bytes, Opcode opcode, ChannelContext channelContext)
       throws Exception {
-    WsResponse wsResponse = null;
+    WebscoketResponse wsResponse = null;
     if (opcode == Opcode.TEXT) {
       if (bytes == null || bytes.length == 0) {
         Tio.remove(channelContext, "错误的websocket包，body为空");
@@ -203,10 +202,10 @@ public class WsServerAioHandler implements ServerAioHandler {
   @Override
   public void handler(Packet packet, ChannelContext channelContext) throws Exception {
 
-    WsRequest wsRequest = (WsRequest) packet;
+    WebsocketRequest wsRequest = (WebsocketRequest) packet;
 
     if (wsRequest.isHandShake()) {// 是握手包
-      WsSessionContext wsSessionContext = (WsSessionContext) channelContext.get();
+      WebsocketSessionContext wsSessionContext = (WebsocketSessionContext) channelContext.get();
       HttpRequest request = wsSessionContext.getHandshakeRequest();
       HttpResponse httpResponse = wsSessionContext.getHandshakeResponse();
       HttpResponse r = wsMsgHandler.handshake(request, httpResponse, channelContext);
@@ -216,7 +215,7 @@ public class WsServerAioHandler implements ServerAioHandler {
       }
       wsSessionContext.setHandshakeResponse(r);
 
-      WsResponse wsResponse = new WsResponse();
+      WebscoketResponse wsResponse = new WebscoketResponse();
       wsResponse.setHandShake(true);
       Tio.send(channelContext, wsResponse);
       wsSessionContext.setHandshaked(true);
@@ -229,7 +228,7 @@ public class WsServerAioHandler implements ServerAioHandler {
       return;
     }
 
-    WsResponse wsResponse = h(wsRequest, wsRequest.getBody(), wsRequest.getWsOpcode(), channelContext);
+    WebscoketResponse wsResponse = h(wsRequest, wsRequest.getBody(), wsRequest.getWsOpcode(), channelContext);
 
     if (wsResponse != null) {
       Tio.send(channelContext, wsResponse);
@@ -238,23 +237,23 @@ public class WsServerAioHandler implements ServerAioHandler {
     return;
   }
 
-  private WsResponse processRetObj(Object obj, String methodName, ChannelContext channelContext) throws Exception {
-    WsResponse wsResponse = null;
+  private WebscoketResponse processRetObj(Object obj, String methodName, ChannelContext channelContext) throws Exception {
+    WebscoketResponse wsResponse = null;
     if (obj == null) {
       return null;
     } else {
       if (obj instanceof String) {
         String str = (String) obj;
-        wsResponse = WsResponse.fromText(str, wsServerConfig.getCharset());
+        wsResponse = WebscoketResponse.fromText(str, wsServerConfig.getCharset());
         return wsResponse;
       } else if (obj instanceof byte[]) {
-        wsResponse = WsResponse.fromBytes((byte[]) obj);
+        wsResponse = WebscoketResponse.fromBytes((byte[]) obj);
         return wsResponse;
-      } else if (obj instanceof WsResponse) {
-        return (WsResponse) obj;
+      } else if (obj instanceof WebscoketResponse) {
+        return (WebscoketResponse) obj;
       } else if (obj instanceof ByteBuffer) {
         byte[] bs = ((ByteBuffer) obj).array();
-        wsResponse = WsResponse.fromBytes(bs);
+        wsResponse = WebscoketResponse.fromBytes(bs);
         return wsResponse;
       } else {
         log.error("{} {}.{}()方法，只允许返回byte[]、ByteBuffer、WsResponse或null，但是程序返回了{}", channelContext,
@@ -265,7 +264,7 @@ public class WsServerAioHandler implements ServerAioHandler {
   }
 
   /** @param httpConfig the httpConfig to set */
-  public void setHttpConfig(WsServerConfig httpConfig) {
+  public void setHttpConfig(WebsocketServerConfig httpConfig) {
     this.wsServerConfig = httpConfig;
   }
 

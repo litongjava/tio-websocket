@@ -35,7 +35,7 @@ public class WsServerEncoder {
 		}
 	}
 
-	public static ByteBuffer encode(WsResponse wsResponse, TioConfig tioConfig, ChannelContext channelContext) {
+	public static ByteBuffer encode(WebscoketResponse wsResponse, TioConfig tioConfig, ChannelContext channelContext) {
 		byte[] wsBody = wsResponse.getBody();//就是ws的body，不包括ws的头
 		byte[][] wsBodies = wsResponse.getBodys();
 		int wsBodyLength = 0;

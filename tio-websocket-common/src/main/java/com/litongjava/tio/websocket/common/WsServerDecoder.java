@@ -21,7 +21,7 @@ public class WsServerDecoder {
 
   private static Logger log = LoggerFactory.getLogger(WsServerDecoder.class);
 
-  public static WsRequest decode(ByteBuffer buf, ChannelContext channelContext) throws TioDecodeException {
+  public static WebsocketRequest decode(ByteBuffer buf, ChannelContext channelContext) throws TioDecodeException {
     // WsSessionContext imSessionContext = (WsSessionContext) channelContext.get();
     // List<byte[]> lastParts = imSessionContext.getLastParts();
 
@@ -29,7 +29,7 @@ public class WsServerDecoder {
     int initPosition = buf.position();
     int readableLength = buf.limit() - initPosition;
 
-    int headLength = WsPacket.MINIMUM_HEADER_LENGTH;
+    int headLength = WebsocketSocketPacket.MINIMUM_HEADER_LENGTH;
 
     if (readableLength < headLength) {
       return null;
@@ -89,7 +89,7 @@ public class WsServerDecoder {
       log.info("{} payloadLengthFlag: 127，payloadLength {}", channelContext, payloadLength);
     }
 
-    if (payloadLength < 0 || payloadLength > WsPacket.MAX_BODY_LENGTH) {
+    if (payloadLength < 0 || payloadLength > WebsocketSocketPacket.MAX_BODY_LENGTH) {
       throw new TioDecodeException("body length(" + payloadLength + ") is not right");
     }
 
@@ -102,7 +102,7 @@ public class WsServerDecoder {
     }
 
     // 第二阶段解析
-    WsRequest websocketPacket = new WsRequest();
+    WebsocketRequest websocketPacket = new WebsocketRequest();
     websocketPacket.setWsEof(fin);
     websocketPacket.setWsHasMask(hasMask);
     websocketPacket.setWsMask(mask);

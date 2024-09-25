@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.litongjava.tio.server.ServerTioConfig;
 import com.litongjava.tio.server.TioServer;
 import com.litongjava.tio.utils.thread.pool.SynThreadPoolExecutor;
-import com.litongjava.tio.websocket.common.WsTioUuid;
+import com.litongjava.tio.websocket.common.SnowflakeId;
 import com.litongjava.tio.websocket.server.handler.IWebSocketHandler;
 
 /**
@@ -19,9 +19,9 @@ import com.litongjava.tio.websocket.server.handler.IWebSocketHandler;
 public class WsServerStarter {
   @SuppressWarnings("unused")
   private static Logger log = LoggerFactory.getLogger(WsServerStarter.class);
-  private WsServerConfig wsServerConfig = null;
+  private WebsocketServerConfig wsServerConfig = null;
   private IWebSocketHandler wsMsgHandler = null;
-  private WsServerAioHandler wsServerAioHandler = null;
+  private WebsocketServerAioHandler wsServerAioHandler = null;
   private WebSocketServerAioListener wsServerAioListener = null;
   private ServerTioConfig serverTioConfig = null;
   private TioServer tioServer = null;
@@ -33,7 +33,7 @@ public class WsServerStarter {
   /**
    * @return the wsServerConfig
    */
-  public WsServerConfig getWsServerConfig() {
+  public WebsocketServerConfig getWsServerConfig() {
     return wsServerConfig;
   }
 
@@ -47,7 +47,7 @@ public class WsServerStarter {
   /**
    * @return the wsServerAioHandler
    */
-  public WsServerAioHandler getWsServerAioHandler() {
+  public WebsocketServerAioHandler getWsServerAioHandler() {
     return wsServerAioHandler;
   }
 
@@ -70,18 +70,18 @@ public class WsServerStarter {
   }
 
   public WsServerStarter(int port, IWebSocketHandler wsMsgHandler, SynThreadPoolExecutor tioExecutor, ThreadPoolExecutor groupExecutor) throws IOException {
-    this(new WsServerConfig(port), wsMsgHandler, tioExecutor, groupExecutor);
+    this(new WebsocketServerConfig(port), wsMsgHandler, tioExecutor, groupExecutor);
   }
 
-  public WsServerStarter(WsServerConfig wsServerConfig, IWebSocketHandler wsMsgHandler) throws IOException {
+  public WsServerStarter(WebsocketServerConfig wsServerConfig, IWebSocketHandler wsMsgHandler) throws IOException {
     this(wsServerConfig, wsMsgHandler, null, null);
   }
 
-  public WsServerStarter(WsServerConfig wsServerConfig, IWebSocketHandler wsMsgHandler, SynThreadPoolExecutor tioExecutor, ThreadPoolExecutor groupExecutor) throws IOException {
-    WsTioUuid wsTioUuid = new WsTioUuid();
+  public WsServerStarter(WebsocketServerConfig wsServerConfig, IWebSocketHandler wsMsgHandler, SynThreadPoolExecutor tioExecutor, ThreadPoolExecutor groupExecutor) throws IOException {
+    SnowflakeId wsTioUuid = new SnowflakeId();
     this.wsServerConfig = wsServerConfig;
     this.wsMsgHandler = wsMsgHandler;
-    wsServerAioHandler = new WsServerAioHandler(wsServerConfig, wsMsgHandler);
+    wsServerAioHandler = new WebsocketServerAioHandler(wsServerConfig, wsMsgHandler);
     wsServerAioListener = new WebSocketServerAioListener();
     serverTioConfig = new ServerTioConfig("Tio Websocket Server");
     serverTioConfig.setServerAioHandler(wsServerAioHandler);

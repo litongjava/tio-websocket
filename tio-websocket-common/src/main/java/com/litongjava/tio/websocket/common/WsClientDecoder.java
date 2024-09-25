@@ -2,24 +2,19 @@ package com.litongjava.tio.websocket.common;
 
 import java.nio.ByteBuffer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.core.exception.TioDecodeException;
 import com.litongjava.tio.core.utils.ByteBufferUtils;
 
 public class WsClientDecoder {
+  // private static Logger log = LoggerFactory.getLogger(WsClientDecoder.class);
 
-  private static Logger log = LoggerFactory.getLogger(WsClientDecoder.class);
-
-  public static WsResponse decode(ByteBuffer buf, ChannelContext channelContext)
-      throws TioDecodeException {
+  public static WebscoketResponse decode(ByteBuffer buf, ChannelContext channelContext) throws TioDecodeException {
     // 第一阶段解析
     int initPosition = buf.position();
     int readableLength = buf.limit() - initPosition;
 
-    int headLength = WsPacket.MINIMUM_HEADER_LENGTH;
+    int headLength = WebsocketSocketPacket.MINIMUM_HEADER_LENGTH;
 
     if (readableLength < headLength) {
       return null;
@@ -38,9 +33,7 @@ public class WsClientDecoder {
     }
 
     byte second = buf.get(); // 向后读取一个字节
-    boolean hasMask =
-        (second & 0xFF) >> 7
-            == 1; // 用于标识PayloadData是否经过掩码处理。如果是1，Masking-key域的数据即是掩码密钥，用于解码PayloadData。客户端发出的数据帧需要进行掩码处理，所以此位是1。
+    boolean hasMask = (second & 0xFF) >> 7 == 1; // 用于标识PayloadData是否经过掩码处理。如果是1，Masking-key域的数据即是掩码密钥，用于解码PayloadData。客户端发出的数据帧需要进行掩码处理，所以此位是1。
 
     // Client data must be masked
     if (!hasMask) { // 第9为为mask,必须为1
@@ -57,7 +50,7 @@ public class WsClientDecoder {
         return null;
       }
       payloadLength = ByteBufferUtils.readUB2WithBigEdian(buf);
-      log.info("{} payloadLengthFlag: 126，payloadLength {}", channelContext, payloadLength);
+      // log.info("{} payloadLengthFlag: 126，payloadLength {}", channelContext, payloadLength);
 
     } else if (payloadLength == 127) { // 127读8个字节,后8个字节为payloadLength
       headLength += 8;
@@ -66,10 +59,10 @@ public class WsClientDecoder {
       }
 
       payloadLength = (int) buf.getLong();
-      log.info("{} payloadLengthFlag: 127，payloadLength {}", channelContext, payloadLength);
+      // log.info("{} payloadLengthFlag: 127，payloadLength {}", channelContext, payloadLength);
     }
 
-    if (payloadLength < 0 ) {
+    if (payloadLength < 0) {
       throw new TioDecodeException("body length(" + payloadLength + ") is not right");
     }
 
@@ -82,7 +75,7 @@ public class WsClientDecoder {
     }
 
     // 第二阶段解析
-    WsResponse websocketPacket = new WsResponse();
+    WebscoketResponse websocketPacket = new WebscoketResponse();
     websocketPacket.setWsEof(fin);
     websocketPacket.setWsHasMask(hasMask);
     websocketPacket.setWsMask(mask);
@@ -105,5 +98,6 @@ public class WsClientDecoder {
   }
 
   /** @author tanyaowu 2017年2月22日 下午4:06:42 */
-  public WsClientDecoder() {}
+  public WsClientDecoder() {
+  }
 }
