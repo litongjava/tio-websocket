@@ -10,13 +10,13 @@ import org.slf4j.LoggerFactory;
  * @author tanyaowu
  * 2017年7月30日 上午10:09:59
  */
-public class WebscoketResponse extends WebsocketSocketPacket {
-	private static Logger log = LoggerFactory.getLogger(WebscoketResponse.class);
+public class WebsocketResponse extends WebsocketSocketPacket {
+	private static Logger log = LoggerFactory.getLogger(WebsocketResponse.class);
 
 	private static final long serialVersionUID = 963847148301021559L;
 
-	public static WebscoketResponse fromText(String text, String charset) {
-		WebscoketResponse wsResponse = new WebscoketResponse();
+	public static WebsocketResponse fromText(String text, String charset) {
+		WebsocketResponse wsResponse = new WebsocketResponse();
 		try {
 			wsResponse.setBody(text.getBytes(charset));
 		} catch (UnsupportedEncodingException e) {
@@ -26,8 +26,8 @@ public class WebscoketResponse extends WebsocketSocketPacket {
 		return wsResponse;
 	}
 
-	public static WebscoketResponse fromBytes(byte[] bytes) {
-		WebscoketResponse wsResponse = new WebscoketResponse();
+	public static WebsocketResponse fromBytes(byte[] bytes) {
+		WebsocketResponse wsResponse = new WebsocketResponse();
 		wsResponse.setBody(bytes);
 		wsResponse.setWsOpcode(Opcode.BINARY);
 		return wsResponse;

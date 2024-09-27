@@ -6,10 +6,9 @@ import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.core.exception.TioDecodeException;
 import com.litongjava.tio.core.utils.ByteBufferUtils;
 
-public class WsClientDecoder {
-  // private static Logger log = LoggerFactory.getLogger(WsClientDecoder.class);
+public class WebsocketClientDecoder {
 
-  public static WebscoketResponse decode(ByteBuffer buf, ChannelContext channelContext) throws TioDecodeException {
+  public static WebsocketResponse decode(ByteBuffer buf, ChannelContext channelContext) throws TioDecodeException {
     // 第一阶段解析
     int initPosition = buf.position();
     int readableLength = buf.limit() - initPosition;
@@ -21,15 +20,12 @@ public class WsClientDecoder {
     }
 
     byte first = buf.get();
-    //		int b = first & 0xFF; //转换成32位
     boolean fin = (first & 0x80) > 0; // 得到第8位 10000000>0
-    @SuppressWarnings("unused")
-    int rsv = (first & 0x70) >>> 4; // 得到5、6、7 为01110000 然后右移四位为00000111
+    //int rsv = (first & 0x70) >>> 4; // 得到5、6、7 为01110000 然后右移四位为00000111
+
     byte opCodeByte = (byte) (first & 0x0F); // 后四位为opCode 00001111
     Opcode opcode = Opcode.valueOf(opCodeByte);
     if (opcode == Opcode.CLOSE) {
-      //			Tio.remove(channelContext, "收到opcode:" + opcode);
-      //			return null;
     }
 
     byte second = buf.get(); // 向后读取一个字节
@@ -50,7 +46,6 @@ public class WsClientDecoder {
         return null;
       }
       payloadLength = ByteBufferUtils.readUB2WithBigEdian(buf);
-      // log.info("{} payloadLengthFlag: 126，payloadLength {}", channelContext, payloadLength);
 
     } else if (payloadLength == 127) { // 127读8个字节,后8个字节为payloadLength
       headLength += 8;
@@ -59,7 +54,6 @@ public class WsClientDecoder {
       }
 
       payloadLength = (int) buf.getLong();
-      // log.info("{} payloadLengthFlag: 127，payloadLength {}", channelContext, payloadLength);
     }
 
     if (payloadLength < 0) {
@@ -75,7 +69,7 @@ public class WsClientDecoder {
     }
 
     // 第二阶段解析
-    WebscoketResponse websocketPacket = new WebscoketResponse();
+    WebsocketResponse websocketPacket = new WebsocketResponse();
     websocketPacket.setWsEof(fin);
     websocketPacket.setWsHasMask(hasMask);
     websocketPacket.setWsMask(mask);
@@ -97,7 +91,6 @@ public class WsClientDecoder {
     return websocketPacket;
   }
 
-  /** @author tanyaowu 2017年2月22日 下午4:06:42 */
-  public WsClientDecoder() {
+  public WebsocketClientDecoder() {
   }
 }

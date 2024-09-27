@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.litongjava.tio.server.ServerTioConfig;
 import com.litongjava.tio.server.TioServer;
 import com.litongjava.tio.utils.thread.pool.SynThreadPoolExecutor;
-import com.litongjava.tio.websocket.common.SnowflakeId;
+import com.litongjava.tio.websocket.common.WebsocketSnowflakeId;
 import com.litongjava.tio.websocket.server.handler.IWebSocketHandler;
 
 /**
@@ -78,7 +78,7 @@ public class WsServerStarter {
   }
 
   public WsServerStarter(WebsocketServerConfig wsServerConfig, IWebSocketHandler wsMsgHandler, SynThreadPoolExecutor tioExecutor, ThreadPoolExecutor groupExecutor) throws IOException {
-    SnowflakeId wsTioUuid = new SnowflakeId();
+    WebsocketSnowflakeId wsTioUuid = new WebsocketSnowflakeId();
     this.wsServerConfig = wsServerConfig;
     this.wsMsgHandler = wsMsgHandler;
     wsServerAioHandler = new WebsocketServerAioHandler(wsServerConfig, wsMsgHandler);

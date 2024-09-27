@@ -14,12 +14,12 @@ import com.litongjava.tio.core.utils.ByteBufferUtils;
  * @author tanyaowu
  * 2017年7月30日 上午10:10:50
  */
-public class WsServerDecoder {
+public class WebsocketServerDecoder {
   public static enum Step {
     header, remain_header, data,
   }
 
-  private static Logger log = LoggerFactory.getLogger(WsServerDecoder.class);
+  private static Logger log = LoggerFactory.getLogger(WebsocketServerDecoder.class);
 
   public static WebsocketRequest decode(ByteBuffer buf, ChannelContext channelContext) throws TioDecodeException {
     // WsSessionContext imSessionContext = (WsSessionContext) channelContext.get();
@@ -175,6 +175,6 @@ public class WsServerDecoder {
   }
 
   /** @author tanyaowu 2017年2月22日 下午4:06:42 */
-  public WsServerDecoder() {
+  public WebsocketServerDecoder() {
   }
 }

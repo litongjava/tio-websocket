@@ -29,9 +29,9 @@ import com.litongjava.tio.utils.encoder.Sha1Utils;
 import com.litongjava.tio.utils.hutool.StrUtil;
 import com.litongjava.tio.websocket.common.Opcode;
 import com.litongjava.tio.websocket.common.WebsocketRequest;
-import com.litongjava.tio.websocket.common.WebscoketResponse;
-import com.litongjava.tio.websocket.common.WsServerDecoder;
-import com.litongjava.tio.websocket.common.WsServerEncoder;
+import com.litongjava.tio.websocket.common.WebsocketResponse;
+import com.litongjava.tio.websocket.common.WebsocketServerDecoder;
+import com.litongjava.tio.websocket.common.WesocketServerEncoder;
 import com.litongjava.tio.websocket.common.WebsocketSessionContext;
 import com.litongjava.tio.websocket.server.handler.IWebSocketHandler;
 
@@ -92,7 +92,7 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
       return wsRequestPacket;
     }
 
-    WebsocketRequest websocketPacket = WsServerDecoder.decode(buffer, channelContext);
+    WebsocketRequest websocketPacket = WebsocketServerDecoder.decode(buffer, channelContext);
 
     if (websocketPacket != null) {
       if (!websocketPacket.isWsEof()) { // 数据包尚未完成
@@ -145,7 +145,7 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
 
   @Override
   public ByteBuffer encode(Packet packet, TioConfig tioConfig, ChannelContext channelContext) {
-    WebscoketResponse wsResponse = (WebscoketResponse) packet;
+    WebsocketResponse wsResponse = (WebsocketResponse) packet;
 
     // 握手包
     if (wsResponse.isHandShake()) {
@@ -154,7 +154,7 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
       return HttpResponseEncoder.encode(handshakeResponse, tioConfig, channelContext);
     }
 
-    ByteBuffer byteBuffer = WsServerEncoder.encode(wsResponse, tioConfig, channelContext);
+    ByteBuffer byteBuffer = WesocketServerEncoder.encode(wsResponse, tioConfig, channelContext);
     return byteBuffer;
   }
 
@@ -163,9 +163,9 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
     return wsServerConfig;
   }
 
-  private WebscoketResponse h(WebsocketRequest websocketPacket, byte[] bytes, Opcode opcode, ChannelContext channelContext)
+  private WebsocketResponse h(WebsocketRequest websocketPacket, byte[] bytes, Opcode opcode, ChannelContext channelContext)
       throws Exception {
-    WebscoketResponse wsResponse = null;
+    WebsocketResponse wsResponse = null;
     if (opcode == Opcode.TEXT) {
       if (bytes == null || bytes.length == 0) {
         Tio.remove(channelContext, "错误的websocket包，body为空");
@@ -215,7 +215,7 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
       }
       wsSessionContext.setHandshakeResponse(r);
 
-      WebscoketResponse wsResponse = new WebscoketResponse();
+      WebsocketResponse wsResponse = new WebsocketResponse();
       wsResponse.setHandShake(true);
       Tio.send(channelContext, wsResponse);
       wsSessionContext.setHandshaked(true);
@@ -228,7 +228,7 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
       return;
     }
 
-    WebscoketResponse wsResponse = h(wsRequest, wsRequest.getBody(), wsRequest.getWsOpcode(), channelContext);
+    WebsocketResponse wsResponse = h(wsRequest, wsRequest.getBody(), wsRequest.getWsOpcode(), channelContext);
 
     if (wsResponse != null) {
       Tio.send(channelContext, wsResponse);
@@ -237,23 +237,23 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
     return;
   }
 
-  private WebscoketResponse processRetObj(Object obj, String methodName, ChannelContext channelContext) throws Exception {
-    WebscoketResponse wsResponse = null;
+  private WebsocketResponse processRetObj(Object obj, String methodName, ChannelContext channelContext) throws Exception {
+    WebsocketResponse wsResponse = null;
     if (obj == null) {
       return null;
     } else {
       if (obj instanceof String) {
         String str = (String) obj;
-        wsResponse = WebscoketResponse.fromText(str, wsServerConfig.getCharset());
+        wsResponse = WebsocketResponse.fromText(str, wsServerConfig.getCharset());
         return wsResponse;
       } else if (obj instanceof byte[]) {
-        wsResponse = WebscoketResponse.fromBytes((byte[]) obj);
+        wsResponse = WebsocketResponse.fromBytes((byte[]) obj);
         return wsResponse;
-      } else if (obj instanceof WebscoketResponse) {
-        return (WebscoketResponse) obj;
+      } else if (obj instanceof WebsocketResponse) {
+        return (WebsocketResponse) obj;
       } else if (obj instanceof ByteBuffer) {
         byte[] bs = ((ByteBuffer) obj).array();
-        wsResponse = WebscoketResponse.fromBytes(bs);
+        wsResponse = WebsocketResponse.fromBytes(bs);
         return wsResponse;
       } else {
         log.error("{} {}.{}()方法，只允许返回byte[]、ByteBuffer、WsResponse或null，但是程序返回了{}", channelContext,

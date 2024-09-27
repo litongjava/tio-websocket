@@ -10,13 +10,13 @@ import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.core.TioConfig;
 import com.litongjava.tio.core.utils.ByteBufferUtils;
 
-public class WsClientEncoder {
+public class WebsocketClientEncoder {
   @SuppressWarnings("unused")
-  private static Logger log = LoggerFactory.getLogger(WsClientEncoder.class);
+  private static Logger log = LoggerFactory.getLogger(WebsocketClientEncoder.class);
 
   private static final Random reuseableRandom = new Random();
 
-  /****
+  /** 
       0                   1                   2                   3
       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
      +-+-+-+-+-------+-+-------------+-------------------------------+
