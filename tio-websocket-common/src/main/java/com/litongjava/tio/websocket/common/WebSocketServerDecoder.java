@@ -14,14 +14,14 @@ import com.litongjava.tio.core.utils.ByteBufferUtils;
  * @author tanyaowu
  * 2017年7月30日 上午10:10:50
  */
-public class WebsocketServerDecoder {
+public class WebSocketServerDecoder {
   public static enum Step {
     header, remain_header, data,
   }
 
-  private static Logger log = LoggerFactory.getLogger(WebsocketServerDecoder.class);
+  private static Logger log = LoggerFactory.getLogger(WebSocketServerDecoder.class);
 
-  public static WebsocketRequest decode(ByteBuffer buf, ChannelContext channelContext) throws TioDecodeException {
+  public static WebSocketRequest decode(ByteBuffer buf, ChannelContext channelContext) throws TioDecodeException {
     // WsSessionContext imSessionContext = (WsSessionContext) channelContext.get();
     // List<byte[]> lastParts = imSessionContext.getLastParts();
 
@@ -29,7 +29,7 @@ public class WebsocketServerDecoder {
     int initPosition = buf.position();
     int readableLength = buf.limit() - initPosition;
 
-    int headLength = WebsocketSocketPacket.MINIMUM_HEADER_LENGTH;
+    int headLength = WebSocketPacket.MINIMUM_HEADER_LENGTH;
 
     if (readableLength < headLength) {
       return null;
@@ -89,7 +89,7 @@ public class WebsocketServerDecoder {
       log.info("{} payloadLengthFlag: 127，payloadLength {}", channelContext, payloadLength);
     }
 
-    if (payloadLength < 0 || payloadLength > WebsocketSocketPacket.MAX_BODY_LENGTH) {
+    if (payloadLength < 0 || payloadLength > WebSocketPacket.MAX_BODY_LENGTH) {
       throw new TioDecodeException("body length(" + payloadLength + ") is not right");
     }
 
@@ -102,7 +102,7 @@ public class WebsocketServerDecoder {
     }
 
     // 第二阶段解析
-    WebsocketRequest websocketPacket = new WebsocketRequest();
+    WebSocketRequest websocketPacket = new WebSocketRequest();
     websocketPacket.setWsEof(fin);
     websocketPacket.setWsHasMask(hasMask);
     websocketPacket.setWsMask(mask);
@@ -175,6 +175,6 @@ public class WebsocketServerDecoder {
   }
 
   /** @author tanyaowu 2017年2月22日 下午4:06:42 */
-  public WebsocketServerDecoder() {
+  public WebSocketServerDecoder() {
   }
 }

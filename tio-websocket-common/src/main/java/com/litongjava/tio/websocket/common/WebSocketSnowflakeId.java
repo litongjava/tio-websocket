@@ -6,14 +6,14 @@ import com.litongjava.aio.AioId;
 import com.litongjava.tio.utils.hutool.Snowflake;
 
 
-public class WebsocketSnowflakeId implements AioId {
+public class WebSocketSnowflakeId implements AioId {
   private Snowflake snowflake;
 
-  public WebsocketSnowflakeId() {
+  public WebSocketSnowflakeId() {
     snowflake = new Snowflake(ThreadLocalRandom.current().nextInt(1, 30), ThreadLocalRandom.current().nextInt(1, 30));
   }
 
-  public WebsocketSnowflakeId(long workerId, long datacenterId) {
+  public WebSocketSnowflakeId(long workerId, long datacenterId) {
     snowflake = new Snowflake(workerId, datacenterId);
   }
 

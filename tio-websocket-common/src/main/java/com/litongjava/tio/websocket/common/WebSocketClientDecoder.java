@@ -6,14 +6,14 @@ import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.core.exception.TioDecodeException;
 import com.litongjava.tio.core.utils.ByteBufferUtils;
 
-public class WebsocketClientDecoder {
+public class WebSocketClientDecoder {
 
-  public static WebsocketResponse decode(ByteBuffer buf, ChannelContext channelContext) throws TioDecodeException {
+  public static WebSocketResponse decode(ByteBuffer buf, ChannelContext channelContext) throws TioDecodeException {
     // 第一阶段解析
     int initPosition = buf.position();
     int readableLength = buf.limit() - initPosition;
 
-    int headLength = WebsocketSocketPacket.MINIMUM_HEADER_LENGTH;
+    int headLength = WebSocketPacket.MINIMUM_HEADER_LENGTH;
 
     if (readableLength < headLength) {
       return null;
@@ -69,7 +69,7 @@ public class WebsocketClientDecoder {
     }
 
     // 第二阶段解析
-    WebsocketResponse websocketPacket = new WebsocketResponse();
+    WebSocketResponse websocketPacket = new WebSocketResponse();
     websocketPacket.setWsEof(fin);
     websocketPacket.setWsHasMask(hasMask);
     websocketPacket.setWsMask(mask);
@@ -91,6 +91,6 @@ public class WebsocketClientDecoder {
     return websocketPacket;
   }
 
-  public WebsocketClientDecoder() {
+  public WebSocketClientDecoder() {
   }
 }

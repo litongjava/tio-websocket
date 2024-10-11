@@ -7,7 +7,7 @@ import com.litongjava.aio.Packet;
  * @author tanyaowu
  * 2017年7月30日 上午10:09:51
  */
-public class WebsocketSocketPacket extends Packet {
+public class WebSocketPacket extends Packet {
 
   private static final long serialVersionUID = 4506947563506841436L;
   /**
@@ -37,11 +37,11 @@ public class WebsocketSocketPacket extends Packet {
   private byte[] wsMask;
   private String wsBodyText; //当为文本时才有此字段
 
-  public WebsocketSocketPacket() {
+  public WebSocketPacket() {
 
   }
 
-  public WebsocketSocketPacket(byte[] body) {
+  public WebSocketPacket(byte[] body) {
     this();
     this.body = body;
   }

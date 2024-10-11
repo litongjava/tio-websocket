@@ -2,9 +2,6 @@ package com.litongjava.tio.websocket.common;
 
 import java.nio.ByteBuffer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.core.TioConfig;
 import com.litongjava.tio.core.utils.ByteBufferUtils;
@@ -15,7 +12,7 @@ import com.litongjava.tio.core.utils.ByteBufferUtils;
  * @author tanyaowu
  *
  */
-public class WesocketServerEncoder {
+public class WebSocketServerEncoder {
   public static final int MAX_HEADER_LENGTH = 20480;
 
   private static void checkLength(byte[] bytes, int length, int offset) {
@@ -32,7 +29,7 @@ public class WesocketServerEncoder {
     }
   }
 
-  public static ByteBuffer encode(WebsocketResponse wsResponse, TioConfig tioConfig, ChannelContext channelContext) {
+  public static ByteBuffer encode(WebSocketResponse wsResponse, TioConfig tioConfig, ChannelContext channelContext) {
     byte[] wsBody = wsResponse.getBody();//就是ws的body，不包括ws的头
     byte[][] wsBodies = wsResponse.getBodys();
     int wsBodyLength = 0;
@@ -94,7 +91,7 @@ public class WesocketServerEncoder {
    * 2017年2月22日 下午4:06:42
    *
    */
-  public WesocketServerEncoder() {
+  public WebSocketServerEncoder() {
 
   }
 }

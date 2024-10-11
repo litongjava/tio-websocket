@@ -3,7 +3,7 @@ package com.litongjava.tio.websocket.server.handler;
 import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.http.common.HttpRequest;
 import com.litongjava.tio.http.common.HttpResponse;
-import com.litongjava.tio.websocket.common.WebsocketRequest;
+import com.litongjava.tio.websocket.common.WebSocketRequest;
 
 /**
  *
@@ -45,7 +45,7 @@ public interface IWebSocketHandler {
    * @throws Exception
    * @author tanyaowu
    */
-  Object onBytes(WebsocketRequest wsRequest, byte[] bytes, ChannelContext channelContext) throws Exception;
+  Object onBytes(WebSocketRequest wsRequest, byte[] bytes, ChannelContext channelContext) throws Exception;
 
   /**
    * 当收到Opcode.CLOSE时，执行该方法，业务层在该方法中一般不需要写什么逻辑，空着就好
@@ -56,7 +56,7 @@ public interface IWebSocketHandler {
    * @throws Exception
    * @author tanyaowu
    */
-  Object onClose(WebsocketRequest wsRequest, byte[] bytes, ChannelContext channelContext) throws Exception;
+  Object onClose(WebSocketRequest wsRequest, byte[] bytes, ChannelContext channelContext) throws Exception;
 
   /**
    * <li>当收到Opcode.TEXT消息时，执行该方法。也就是说如何你的ws是基于TEXT传输的，就会走到这个方法</li>
@@ -67,5 +67,5 @@ public interface IWebSocketHandler {
    * @throws Exception
    * @author tanyaowu
    */
-  Object onText(WebsocketRequest wsRequest, String text, ChannelContext channelContext) throws Exception;
+  Object onText(WebSocketRequest wsRequest, String text, ChannelContext channelContext) throws Exception;
 }

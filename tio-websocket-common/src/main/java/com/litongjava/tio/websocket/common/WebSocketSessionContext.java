@@ -10,7 +10,7 @@ import com.litongjava.tio.http.common.HttpResponse;
  * @author tanyaowu
  *
  */
-public class WebsocketSessionContext {
+public class WebSocketSessionContext {
 
   /**
    * 是否已经握过手
@@ -43,7 +43,7 @@ public class WebsocketSessionContext {
    * @author tanyaowu 2017年2月21日 上午10:27:54
    *
    */
-  public WebsocketSessionContext() {
+  public WebSocketSessionContext() {
 
   }
 

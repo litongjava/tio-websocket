@@ -10,9 +10,9 @@ import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.core.TioConfig;
 import com.litongjava.tio.core.utils.ByteBufferUtils;
 
-public class WebsocketClientEncoder {
+public class WebSocketClientEncoder {
   @SuppressWarnings("unused")
-  private static Logger log = LoggerFactory.getLogger(WebsocketClientEncoder.class);
+  private static Logger log = LoggerFactory.getLogger(WebSocketClientEncoder.class);
 
   private static final Random reuseableRandom = new Random();
 
@@ -36,7 +36,7 @@ public class WebsocketClientEncoder {
      |                     Payload Data continued ...                |
      +---------------------------------------------------------------+
   */
-  public static ByteBuffer encode(WebsocketSocketPacket packet, TioConfig tioConfig, ChannelContext channelContext) {
+  public static ByteBuffer encode(WebSocketPacket packet, TioConfig tioConfig, ChannelContext channelContext) {
     byte[] wsBody = packet.getBody(); // 就是ws的body，不包括ws的头
     byte[][] wsBodies = packet.getBodys();
     int wsBodyLength = 0;

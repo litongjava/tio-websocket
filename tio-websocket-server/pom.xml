@@ -6,18 +6,18 @@
     <version>3.7.3.v20240601-RELEASE</version>
   </parent>
   <artifactId>tio-websocket-server</artifactId>
-  <version>3.7.3.v20240920-RELEASE</version>
+  <version>3.7.3.v20241005-RELEASE</version>
   <dependencies>
     <dependency>
       <groupId>com.litongjava</groupId>
       <artifactId>tio-websocket-common</artifactId>
-      <version>3.7.3.v20241004-RELEASE</version>
+      <version>3.7.3.v20241005-RELEASE</version>
     </dependency>
 
     <dependency>
       <groupId>com.litongjava</groupId>
       <artifactId>tio-http-server</artifactId>
-      <version>3.7.3.v20241004-RELEASE</version>
+      <version>3.7.3.v20241005-RELEASE</version>
     </dependency>
 
     <dependency>
