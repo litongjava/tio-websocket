@@ -64,21 +64,19 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
 
   @SuppressWarnings("unchecked")
   @Override
-  public WebSocketRequest decode(ByteBuffer buffer, int limit, int position, int readableLength, ChannelContext channelContext)
-      throws TioDecodeException {
+  public WebSocketRequest decode(ByteBuffer buffer, int limit, int position, int readableLength, ChannelContext channelContext) throws TioDecodeException {
     WebSocketSessionContext wsSessionContext = (WebSocketSessionContext) channelContext.get();
     // int initPosition = buffer.position();
 
     if (!wsSessionContext.isHandshaked()) {// 尚未握手
-      HttpRequest request = HttpRequestDecoder.decode(buffer, limit, position, readableLength, channelContext,
-          wsServerConfig);
+      HttpRequest request = HttpRequestDecoder.decode(buffer, limit, position, readableLength, channelContext, wsServerConfig);
       if (request == null) {
         return null;
       }
 
       HttpResponse httpResponse = updateWebSocketProtocol(request, channelContext);
       if (httpResponse == null) {
-        throw new TioDecodeException("http协议升级到websocket协议失败");
+        throw new TioDecodeException("Failed to upgrade the HTTP protocol to the WebSocket protocol.");
       }
 
       wsSessionContext.setHandshakeRequest(request);
@@ -163,12 +161,11 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
     return wsServerConfig;
   }
 
-  private WebSocketResponse h(WebSocketRequest websocketPacket, byte[] bytes, Opcode opcode, ChannelContext channelContext)
-      throws Exception {
+  private WebSocketResponse h(WebSocketRequest websocketPacket, byte[] bytes, Opcode opcode, ChannelContext channelContext) throws Exception {
     WebSocketResponse wsResponse = null;
     if (opcode == Opcode.TEXT) {
       if (bytes == null || bytes.length == 0) {
-        Tio.remove(channelContext, "错误的websocket包，body为空");
+        Tio.remove(channelContext, "Incorrect websocket packet, body is empty.");
         return null;
       }
       String text = new String(bytes, wsServerConfig.getCharset());
@@ -178,7 +175,7 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
       return wsResponse;
     } else if (opcode == Opcode.BINARY) {
       if (bytes == null || bytes.length == 0) {
-        Tio.remove(channelContext, "错误的websocket包，body为空");
+        Tio.remove(channelContext, "Incorrect websocket packet, body is empty.");
         return null;
       }
       Object retObj = wsMsgHandler.onBytes(websocketPacket, bytes, channelContext);
@@ -186,7 +183,9 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
       wsResponse = processRetObj(retObj, methodName, channelContext);
       return wsResponse;
     } else if (opcode == Opcode.PING || opcode == Opcode.PONG) {
-      log.debug("收到" + opcode);
+      if (log.isDebugEnabled()) {
+        log.debug("received" + opcode);
+      }
       return null;
     } else if (opcode == Opcode.CLOSE) {
       Object retObj = wsMsgHandler.onClose(websocketPacket, bytes, channelContext);
@@ -194,7 +193,7 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
       wsResponse = processRetObj(retObj, methodName, channelContext);
       return wsResponse;
     } else {
-      Tio.remove(channelContext, "错误的websocket包，错误的Opcode");
+      Tio.remove(channelContext, "Incorrect websocket packet, incorrect Opcode");
       return null;
     }
   }
@@ -210,14 +209,19 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
       HttpResponse httpResponse = wsSessionContext.getHandshakeResponse();
       HttpResponse r = wsMsgHandler.handshake(request, httpResponse, channelContext);
       if (r == null) {
-        Tio.remove(channelContext, "业务层不同意握手");
+        Tio.remove(channelContext, "The business layer does not agree to handshake.");
         return;
       }
       wsSessionContext.setHandshakeResponse(r);
 
       WebSocketResponse wsResponse = new WebSocketResponse();
       wsResponse.setHandShake(true);
-      Tio.send(channelContext, wsResponse);
+      if (wsResponse.isBlockSend()) {
+        Tio.bSend(channelContext, wsResponse);
+      } else {
+        Tio.send(channelContext, wsResponse);
+      }
+
       wsSessionContext.setHandshaked(true);
 
       wsMsgHandler.onAfterHandshaked(request, httpResponse, channelContext);
@@ -256,8 +260,7 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
         wsResponse = WebSocketResponse.fromBytes(bs);
         return wsResponse;
       } else {
-        log.error("{} {}.{}()方法，只允许返回byte[]、ByteBuffer、WsResponse或null，但是程序返回了{}", channelContext,
-            this.getClass().getName(), methodName, obj.getClass().getName());
+        log.error("{} {}.{}()方法，只允许返回byte[]、ByteBuffer、WsResponse或null，但是程序返回了{}", channelContext, this.getClass().getName(), methodName, obj.getClass().getName());
         return null;
       }
     }
@@ -287,15 +290,14 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
       try {
         Sec_WebSocket_Key_Bytes = Sec_WebSocket_Key.getBytes(request.getCharset());
       } catch (UnsupportedEncodingException e) {
-//				log.error(e.toString(), e);
+        //				log.error(e.toString(), e);
         throw new RuntimeException(e);
       }
       byte[] allBs = new byte[Sec_WebSocket_Key_Bytes.length + SEC_WEBSOCKET_KEY_SUFFIX_BYTES.length];
       System.arraycopy(Sec_WebSocket_Key_Bytes, 0, allBs, 0, Sec_WebSocket_Key_Bytes.length);
-      System.arraycopy(SEC_WEBSOCKET_KEY_SUFFIX_BYTES, 0, allBs, Sec_WebSocket_Key_Bytes.length,
-          SEC_WEBSOCKET_KEY_SUFFIX_BYTES.length);
+      System.arraycopy(SEC_WEBSOCKET_KEY_SUFFIX_BYTES, 0, allBs, Sec_WebSocket_Key_Bytes.length, SEC_WEBSOCKET_KEY_SUFFIX_BYTES.length);
 
-//			String Sec_WebSocket_Key_Magic = Sec_WebSocket_Key + SEC_WEBSOCKET_KEY_SUFFIX_BYTES;
+      //			String Sec_WebSocket_Key_Magic = Sec_WebSocket_Key + SEC_WEBSOCKET_KEY_SUFFIX_BYTES;
       byte[] key_array = Sha1Utils.SHA1(allBs);
       String acceptKey = Base64Utils.encodeToString(key_array);
       HttpResponse httpResponse = new HttpResponse(request);
