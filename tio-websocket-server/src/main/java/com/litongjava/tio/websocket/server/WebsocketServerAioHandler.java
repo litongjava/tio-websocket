@@ -74,7 +74,7 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
         return null;
       }
 
-      HttpResponse httpResponse = updateWebSocketProtocol(request, channelContext);
+      HttpResponse httpResponse = upgradeWebSocketProtocol(request, channelContext);
       if (httpResponse == null) {
         throw new TioDecodeException("Failed to upgrade the HTTP protocol to the WebSocket protocol.");
       }
@@ -280,7 +280,7 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
    * @return
    * @author tanyaowu
    */
-  public static HttpResponse updateWebSocketProtocol(HttpRequest request, ChannelContext channelContext) {
+  public static HttpResponse upgradeWebSocketProtocol(HttpRequest request, ChannelContext channelContext) {
     Map<String, String> headers = request.getHeaders();
 
     String Sec_WebSocket_Key = headers.get(RequestHeaderKey.Sec_WebSocket_Key);
