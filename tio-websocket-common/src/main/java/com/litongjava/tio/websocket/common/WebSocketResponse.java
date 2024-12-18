@@ -5,6 +5,8 @@ import java.io.UnsupportedEncodingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.litongjava.tio.utils.json.JsonUtils;
+
 /**
  *
  * @author tanyaowu
@@ -14,6 +16,21 @@ public class WebSocketResponse extends WebSocketPacket {
   private static Logger log = LoggerFactory.getLogger(WebSocketResponse.class);
 
   private static final long serialVersionUID = 963847148301021559L;
+
+  public static WebSocketResponse fromJson(Object data) {
+    WebSocketResponse wsResponse = new WebSocketResponse();
+    String text = JsonUtils.toJson(data);
+    wsResponse.setBody(text.getBytes());
+    wsResponse.setWsOpcode(Opcode.TEXT);
+    return wsResponse;
+  }
+
+  public static WebSocketResponse fromText(String text) {
+    WebSocketResponse wsResponse = new WebSocketResponse();
+    wsResponse.setBody(text.getBytes());
+    wsResponse.setWsOpcode(Opcode.TEXT);
+    return wsResponse;
+  }
 
   public static WebSocketResponse fromText(String text, String charset) {
     WebSocketResponse wsResponse = new WebSocketResponse();
