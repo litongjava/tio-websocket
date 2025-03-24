@@ -17,6 +17,24 @@ public class WebSocketResponse extends WebSocketPacket {
 
   private static final long serialVersionUID = 963847148301021559L;
 
+  public WebSocketResponse() {
+
+  }
+
+  /**
+   * 不要疑惑,虽然传入的是自己类型,但是设置是Opcode.TEXT,如果需要纯自己数据,请调用fromBytes方法
+   * @param jsonBytes
+   */
+  public WebSocketResponse(byte[] jsonBytes) {
+    this.setBody(jsonBytes);
+    this.setWsOpcode(Opcode.TEXT);
+  }
+
+  public WebSocketResponse(String text) {
+    this.setBody(text.getBytes());
+    this.setWsOpcode(Opcode.TEXT);
+  }
+
   public static WebSocketResponse fromJson(Object data) {
     WebSocketResponse wsResponse = new WebSocketResponse();
     String text = JsonUtils.toJson(data);
