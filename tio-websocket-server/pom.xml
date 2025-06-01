@@ -3,16 +3,22 @@
   <parent>
     <groupId>com.litongjava</groupId>
     <artifactId>t-io</artifactId>
-    <version>3.7.3.v20240601-RELEASE</version>
+    <version>3.7.3.v20250601-RELEASE</version>
   </parent>
   <artifactId>tio-websocket-server</artifactId>
   <name>tio-websocket-server</name>
-  <version>3.7.3.v20250501-RELEASE</version>
+  <version>3.7.3.v20250601-RELEASE</version>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>1.8</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>com.litongjava</groupId>
       <artifactId>tio-websocket-common</artifactId>
-      <version>3.7.3.v20250501-RELEASE</version>
+      <version>3.7.3.v20250601-RELEASE</version>
     </dependency>
 
     <dependency>
@@ -76,7 +82,6 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.9.1</version>
         <configuration>
-          <!-- 添加这个压制JavaDoc检查 -->
           <additionalparam>-Xdoclint:none</additionalparam>
         </configuration>
         <executions>
