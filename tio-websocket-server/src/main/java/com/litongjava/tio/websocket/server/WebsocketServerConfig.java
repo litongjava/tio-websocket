@@ -12,10 +12,6 @@ public class WebsocketServerConfig extends HttpConfig {
     super(bindPort, useSession);
   }
 
-  /**
-   *
-   * @author tanyaowu
-   */
   public WebsocketServerConfig(Integer bindPort) {
     super(bindPort, true);
   }

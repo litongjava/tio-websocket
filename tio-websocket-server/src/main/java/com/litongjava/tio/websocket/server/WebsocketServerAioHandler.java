@@ -24,8 +24,8 @@ import com.litongjava.tio.http.common.HttpResponseEncoder;
 import com.litongjava.tio.http.common.HttpResponseStatus;
 import com.litongjava.tio.http.common.RequestHeaderKey;
 import com.litongjava.tio.server.intf.ServerAioHandler;
-import com.litongjava.tio.utils.encoder.Base64Utils;
-import com.litongjava.tio.utils.encoder.Sha1Utils;
+import com.litongjava.tio.utils.base64.Base64Utils;
+import com.litongjava.tio.utils.digest.Sha1Utils;
 import com.litongjava.tio.utils.hutool.StrUtil;
 import com.litongjava.tio.websocket.common.Opcode;
 import com.litongjava.tio.websocket.common.WebSocketRequest;
@@ -163,12 +163,13 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
 
   private WebSocketResponse h(WebSocketRequest websocketPacket, byte[] bytes, Opcode opcode, ChannelContext channelContext) throws Exception {
     WebSocketResponse wsResponse = null;
+    String charset = channelContext.getTioConfig().getCharset();
     if (opcode == Opcode.TEXT) {
       if (bytes == null || bytes.length == 0) {
         Tio.remove(channelContext, "Incorrect websocket packet, body is empty.");
         return null;
       }
-      String text = new String(bytes, wsServerConfig.getCharset());
+      String text = new String(bytes, charset);
       Object retObj = wsMsgHandler.onText(websocketPacket, text, channelContext);
       String methodName = "onText";
       wsResponse = processRetObj(retObj, methodName, channelContext);
@@ -242,13 +243,14 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
   }
 
   private WebSocketResponse processRetObj(Object obj, String methodName, ChannelContext channelContext) throws Exception {
+    String charset = channelContext.getTioConfig().getCharset();
     WebSocketResponse wsResponse = null;
     if (obj == null) {
       return null;
     } else {
       if (obj instanceof String) {
         String str = (String) obj;
-        wsResponse = WebSocketResponse.fromText(str, wsServerConfig.getCharset());
+        wsResponse = WebSocketResponse.fromText(str, charset);
         return wsResponse;
       } else if (obj instanceof byte[]) {
         wsResponse = WebSocketResponse.fromBytes((byte[]) obj);
