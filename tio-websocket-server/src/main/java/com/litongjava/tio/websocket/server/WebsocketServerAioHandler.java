@@ -300,7 +300,7 @@ public class WebsocketServerAioHandler implements ServerAioHandler {
       System.arraycopy(SEC_WEBSOCKET_KEY_SUFFIX_BYTES, 0, allBs, Sec_WebSocket_Key_Bytes.length, SEC_WEBSOCKET_KEY_SUFFIX_BYTES.length);
 
       //			String Sec_WebSocket_Key_Magic = Sec_WebSocket_Key + SEC_WEBSOCKET_KEY_SUFFIX_BYTES;
-      byte[] key_array = Sha1Utils.SHA1(allBs);
+      byte[] key_array = Sha1Utils.digest(allBs);
       String acceptKey = Base64Utils.encodeToString(key_array);
       HttpResponse httpResponse = new HttpResponse(request);
 
