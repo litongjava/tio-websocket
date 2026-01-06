@@ -3,16 +3,11 @@ package com.litongjava.tio.websocket.common;
 import java.nio.ByteBuffer;
 import java.util.Random;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.core.TioConfig;
 import com.litongjava.tio.core.utils.ByteBufferUtils;
 
 public class WebSocketClientEncoder {
-  @SuppressWarnings("unused")
-  private static Logger log = LoggerFactory.getLogger(WebSocketClientEncoder.class);
 
   private static final Random reuseableRandom = new Random();
 
